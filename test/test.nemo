@@ -1,0 +1,12 @@
+let a <= (x) -> { print "Hello world" }
+let b <= 5
+
+const b <= "Hello world" |> split |> to_lower
+
+const test <= () -> { "Hello world" |> split |> to_int |> sum }
+
+const sum <= (a: int, b: int) -> {a}
+
+const t <= "Hello world" |> split |> to_lower |> to_int |> sum
+
+const fibb <= (n: int) -> { when n < 1 then 1 else fibb(n - 1) + fibb(n - 2) }
