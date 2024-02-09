@@ -1,5 +1,4 @@
 CC=clang
-CFAGS=-I
 
 nemo:
 	rm -rf build && mkdir build
