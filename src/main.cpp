@@ -1,4 +1,4 @@
-#include "mpc/mpc.h"
+#include "grammar/mpc.h"
 
 #include <editline/readline.h>
 #include <editline/history.h>
@@ -14,8 +14,8 @@ int main(int argc, char** argv) {
     for (int i = 1; i < argc; i++) {
       mpc_result_t r;
       if (mpc_parse_contents(argv[i], Nemo, &r)) {
-        mpc_ast_print(r.output);
-        mpc_ast_delete(r.output);
+        mpc_ast_print(static_cast<mpc_ast_t*>(r.output));
+        mpc_ast_delete(static_cast<mpc_ast_t*>(r.output));
       } else {
         mpc_err_print(r.error);
         mpc_err_delete(r.error);
@@ -34,8 +34,8 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Nemo, &r)) {
-      mpc_ast_print(r.output);
-      mpc_ast_delete(r.output);
+      mpc_ast_print(static_cast<mpc_ast_t*>(r.output));
+      mpc_ast_delete(static_cast<mpc_ast_t*>(r.output));
     } else {    
       mpc_err_print(r.error);
       mpc_err_delete(r.error);

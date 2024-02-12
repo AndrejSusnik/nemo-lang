@@ -1,5 +1,5 @@
-#include "grammar.h"
-#include "mpc.h"
+#include "grammar/grammar.h"
+#include "grammar/mpc.h"
 #include <stdio.h>
 
 mpc_parser_t *Identifier;
@@ -33,7 +33,7 @@ void create_parsers(void)
 
 void define_grammar(void)
 {
-  FILE *grammar = fopen("grammar/grammar.mpc", "r");
+  FILE *grammar = fopen("/home/x/projects/nemo-lang/src/grammar/grammar.mpc", "r");
   if (grammar == NULL)
   {
     fprintf(stderr, "Could not find grammar file\n");

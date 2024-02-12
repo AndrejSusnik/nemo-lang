@@ -1,12 +1,19 @@
-let a <= (x) -> { print "Hello world" }
-let b <= 5
+# let a <= (x) -> { 
+#    "Hello world" |> print
+#    "Test" |> print
+# }
+ 
+let b <= 5 + 1
 
-const b <= "Hello world" |> split |> to_lower
+# const b <= "Hello world" |> split |> to_lower
 
-const test <= () -> { "Hello world" |> split |> to_int |> sum }
+# const test <= () -> { "Hello world" |> split |> to_int |> sum }
 
-const sum <= (a: int, b: int) -> {a}
+# const sum <= (a: int, b: int) -> {a}
 
-const t <= "Hello world" |> split |> to_lower |> to_int |> sum
+# const t <= "Hello world" |> split |> to_lower |> to_int |> sum
 
-const fibb <= (n: int) -> { when n < 1 then 1 else fibb(n - 1) + fibb(n - 2) }
+
+# let time1 <= ura1*60 + minuta1 -(ura2 * 60 + minuta2);
+# return (time1 / 60), (time1 % 60)
+

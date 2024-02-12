@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <map>
 #include <memory>
@@ -55,11 +56,3 @@ private:
     std::map<std::string, std::shared_ptr<ScopeContext *>> children;
     std::map<std::string, std::string> variables;
 };
-
-int main(int argc, char const *argv[])
-{
-    std::shared_ptr<ScopeContext *> parent = std::make_shared<ScopeContext *>();
-
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
-}
