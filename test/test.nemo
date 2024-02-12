@@ -1,11 +1,16 @@
+# lambda :: void -> String
+# "Hello world" = (() -> {"Hello world"})
+
+# a <= lambda :: Any -> void
 # let a <= (x) -> { 
-#    "Hello world" |> print
-#    "Test" |> print
+#   "Hello world" |> print
+#   "Test" |> print
 # }
  
 let b <= 5 + 1
 
 # const b <= "Hello world" |> split |> to_lower
+
 
 # const test <= () -> { "Hello world" |> split |> to_int |> sum }
 

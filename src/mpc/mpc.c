@@ -1,4 +1,4 @@
-#include "grammar/mpc.h"
+#include "mpc/mpc.h"
 
 /*
 ** State Type

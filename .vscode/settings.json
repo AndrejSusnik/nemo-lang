@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "mpc.h": "c"
+        "mpc.h": "c",
+        "string_view": "cpp"
     },
     "mesonbuild.configureOnOpen": false,
     "C_Cpp.default.compileCommands": "/home/x/projects/nemo-lang/builddir/compile_commands.json"

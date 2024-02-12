@@ -2,6 +2,10 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <variant>
+#include <vector>
+#include <mpc/mpc.h>
+#include <functional>
 
 enum class BuiltinType
 {
@@ -12,29 +16,13 @@ enum class BuiltinType
     VOID
 };
 
-class VariableValue
+
+using NemoValue = std::variant<int, char, std::string_view, std::weak_ptr<mpc_ast_t*>>;
+
+struct NemoType
 {
-public:
-    VariableValue(BuiltinType type, void *value) : type(type), value(value)
-    {
-    }
-
-    BuiltinType getType()
-    {
-        return type;
-    }
-
-    void *getValue()
-    {
-        return value;
-    }
-
-private:
     BuiltinType type;
-    void *value;
-};
-
-const auto converter = [](auto value) {
+    NemoValue value;
 };
 
 class ScopeContext
@@ -54,5 +42,5 @@ public:
 private:
     std::shared_ptr<ScopeContext *> parent = nullptr;
     std::map<std::string, std::shared_ptr<ScopeContext *>> children;
-    std::map<std::string, std::string> variables;
+    std::map<std::string, NemoType> variables;
 };
