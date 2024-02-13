@@ -9,9 +9,9 @@
 #include <variant>
 #include <vector>
 
-enum class BuiltinType { INT, CHAR, STRING, LAMBDA, VOID };
+enum class BuiltinType { INT, CHAR, STRING, COLLECTION, LAMBDA, VOID };
 
-using NemoValue = std::variant<int, char, std::string_view, const mpc_ast_t *>;
+using NemoValue = std::variant<int, char, std::string, const mpc_ast_t *>;
 
 struct NemoType {
   BuiltinType type;
@@ -30,7 +30,7 @@ struct NemoType {
       std::cout << std::get<char>(value.value_or(0));
       break;
     case BuiltinType::STRING:
-      std::cout << std::get<std::string_view>(value.value_or(""));
+      std::cout << std::get<std::string>(value.value_or(""));
       break;
     default:
       std::cout << "Not implemeneted";
@@ -55,7 +55,7 @@ NemoType numberType(int value) {
   return type;
 }
 
-NemoType stringType(std::string_view value) {
+NemoType stringType(std::string value) {
   NemoType type;
   type.type = BuiltinType::STRING;
   type.value = value;
