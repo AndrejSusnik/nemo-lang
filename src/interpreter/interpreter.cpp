@@ -40,6 +40,8 @@ std::string typeToString(BuiltinType type) {
     return "string";
   case BuiltinType::LAMBDA:
     return "lambda";
+  case BuiltinType::COLLECTION:
+    return "collection";
   case BuiltinType::VOID:
     return "void";
   default:
@@ -81,6 +83,95 @@ void registerBuiltinFunctions(std::shared_ptr<ScopeContext> ctx) {
     exit(exitCode);
     return voidType();
   });
+
+  ctx->registerFunction("len", [](std::vector<NemoType> args) {
+    if (args.size() != 1) {
+      throw std::runtime_error("len function takes exactly one argument");
+    }
+
+    const auto &arg = args[0];
+
+    if (arg.type != BuiltinType::COLLECTION &&
+        arg.type != BuiltinType::STRING) {
+      throw std::runtime_error(
+          "len function takes a collection or string argument, but got " +
+          typeToString(arg.type));
+    }
+
+    return [&]() {
+      if (arg.type == BuiltinType::COLLECTION) {
+        return numberType(arg.collection.value().size());
+      } else {
+        return numberType(std::get<std::string>(arg.value.value()).size());
+      }
+    }();
+  });
+
+  ctx->registerFunction("sum", [](std::vector<NemoType> args) {
+    if (args.size() != 1) {
+      throw std::runtime_error("sum function takes exactly one argument");
+    }
+
+    if (args[0].type != BuiltinType::COLLECTION) {
+      throw std::runtime_error(
+          "sum function takes a collection argument, but got " +
+          typeToString(args[0].type));
+    }
+
+    int partialSum = 0;
+    for (const auto &arg : args[0].collection.value()) {
+      if (arg.type != BuiltinType::INT) {
+        voidType();
+      }
+
+      partialSum += std::get<int>(arg.value.value());
+    }
+
+    return numberType(partialSum);
+  });
+
+  ctx->registerFunction("to_string", [](std::vector<NemoType> args) {
+    if (args.size() != 1) {
+      throw std::runtime_error("to_string function takes exactly one argument");
+    }
+
+    const auto &arg = args[0];
+
+    switch (arg.type) {
+    case BuiltinType::INT:
+      return stringType(std::to_string(std::get<int>(arg.value.value())));
+    case BuiltinType::CHAR:
+      return stringType(std::string(1, std::get<char>(arg.value.value())));
+    case BuiltinType::STRING:
+      return arg;
+    default:
+      return voidType();
+    }
+  });
+
+  ctx->registerFunction("join", [](std::vector<NemoType> args) {
+    // joins collection of characters into a string
+    if (args.size() != 1) {
+      throw std::runtime_error("join function takes exactly one argument");
+    }
+
+    if (args[0].type != BuiltinType::COLLECTION) {
+      throw std::runtime_error(
+          "join function takes a collection argument, but got " +
+          typeToString(args[0].type));
+    }
+
+    std::string result;
+    for (const auto &arg : args[0].collection.value()) {
+      if (arg.type != BuiltinType::CHAR) {
+        voidType();
+      }
+
+      result += std::get<char>(arg.value.value());
+    }
+
+    return stringType(result);
+  });
 }
 
 void eval(const mpc_ast_t *ast, std::shared_ptr<ScopeContext> ctx) {
@@ -94,12 +185,12 @@ void eval(const mpc_ast_t *ast, std::shared_ptr<ScopeContext> ctx) {
 }
 
 void eval_assignment(const mpc_ast_t *ast, std::shared_ptr<ScopeContext> ctx) {
-  const auto bindType = std::string(ast->children[0]->contents);
+  // const auto bindType = std::string(ast->children[0]->contents);
   const auto identifier = std::string(ast->children[1]->contents);
 
   const auto pipelineResult = eval_pipeline(ast->children[3], ctx);
 
-  ctx->bind(bindType, identifier, pipelineResult);
+  ctx->bind(identifier, pipelineResult);
 }
 
 NemoType eval_pipeline(const mpc_ast_t *ast,
@@ -143,7 +234,6 @@ NemoType eval_pipeline(const mpc_ast_t *ast,
 NemoType eval_expression(const mpc_ast_t *ast,
                          std::shared_ptr<ScopeContext> ctx,
                          std::vector<NemoType> args) {
-                  mpc_ast_print(const_cast<mpc_ast_t *>(ast));
   if (args.size() == 0) {
 
     const auto tag = std::string(ast->tag);
@@ -166,6 +256,15 @@ NemoType eval_expression(const mpc_ast_t *ast,
       return stringType(tmp.substr(1, tmp.length() - 2));
     } else if (tag.find("character") != std::string::npos) {
       return charType(ast->contents[1]);
+    } else if (tag.find("collection") != std::string::npos) {
+      std::vector<NemoType> collection;
+      for (int i = 1; i < ast->children_num - 1; i++) {
+        collection.push_back(
+            eval_expression(ast->children[i], ctx, std::vector<NemoType>()));
+      }
+
+      return collectionType(collection);
+
     } else if (tag.find("lambda") != std::string::npos) {
       return lambdaType(ast);
     } else {
@@ -185,7 +284,6 @@ NemoType eval_expression(const mpc_ast_t *ast,
 
 NemoType eval_operator(const NemoType &op1, const NemoType &op2,
                        const std::string &op) {
-
   if (op1.type != op2.type) {
     std::cout << "Operator types should be equal but got types" +
                      typeToString(op1.type) + " and " + typeToString(op2.type)

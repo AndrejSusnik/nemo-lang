@@ -16,6 +16,7 @@ using NemoValue = std::variant<int, char, std::string, const mpc_ast_t *>;
 struct NemoType {
   BuiltinType type;
   std::optional<NemoValue> value;
+  std::optional<std::vector<NemoType>> collection;
 
   void print() const {
 
@@ -31,6 +32,14 @@ struct NemoType {
       break;
     case BuiltinType::STRING:
       std::cout << std::get<std::string>(value.value_or(""));
+      break;
+    case BuiltinType::COLLECTION:
+      std::cout << "[ ";
+      for (const auto &item : collection.value_or(std::vector<NemoType>{})) {
+        item.print();
+        std::cout << " ";
+      }
+      std::cout << "]";
       break;
     default:
       std::cout << "Not implemeneted";
@@ -79,6 +88,14 @@ NemoType lambdaType(const mpc_ast_t *value) {
   return type;
 }
 
+NemoType collectionType(std::vector<NemoType> value) {
+  NemoType type;
+  type.type = BuiltinType::COLLECTION;
+  type.collection = value;
+
+  return type;
+}
+
 class ScopeContext {
 public:
   ScopeContext(std::shared_ptr<ScopeContext *> parent = nullptr)
@@ -100,7 +117,7 @@ public:
     }
   }
 
-  void bind(std::string bindType, std::string name, NemoType type) {
+  void bind(std::string name, NemoType type) {
     if (variables.find(name) == variables.end()) {
       variables.insert({name, type});
     } else {
