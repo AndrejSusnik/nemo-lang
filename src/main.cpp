@@ -3,8 +3,10 @@
 
 #include "mpc/mpc.h"
 #include "grammar/grammar.h"
-#include "verinfo.h"
-#include "common.hpp"
+#include "interpreter/interpreter.h"
+#include "nemo/verinfo.h" 
+#include "nemo/common.hpp"
+
 
 int main(int argc, char** argv) {
   create_parsers();
@@ -34,7 +36,13 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Nemo, &r)) {
-      mpc_ast_print(static_cast<mpc_ast_t*>(r.output));
+      const auto sucess = evaluate(static_cast<const mpc_ast_t*>(r.output));
+      if (sucess) {
+        std::cout << "Evaluating successfull" << std::endl;
+      }
+      else {
+        std::cout << "Evaluating failed" << std::endl;
+      }
       mpc_ast_delete(static_cast<mpc_ast_t*>(r.output));
     } else {    
       mpc_err_print(r.error);

@@ -33,7 +33,7 @@ void create_parsers(void)
 
 void define_grammar(void)
 {
-  FILE *grammar = fopen("/home/x/projects/nemo-lang/src/grammargrammar/grammar.mpc", "r");
+  FILE *grammar = fopen("/home/x/projects/nemo-lang/src/grammar/grammar.mpc", "r");
   if (grammar == NULL)
   {
     fprintf(stderr, "Could not find grammar file\n");
