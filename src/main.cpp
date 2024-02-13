@@ -1,5 +1,6 @@
 #include <editline/readline.h>
 #include <editline/history.h>
+#include <memory>
 
 #include "mpc/mpc.h"
 #include "grammar/grammar.h"
@@ -11,6 +12,8 @@
 int main(int argc, char** argv) {
   create_parsers();
   define_grammar();
+
+  std::shared_ptr<ScopeContext> globalContext = std::make_shared<ScopeContext>(); 
 
   if (argc > 1) {
     for (int i = 1; i < argc; i++) {
@@ -36,9 +39,8 @@ int main(int argc, char** argv) {
     
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Nemo, &r)) {
-      const auto sucess = evaluate(static_cast<const mpc_ast_t*>(r.output));
-      if (sucess) {
-        std::cout << "Evaluating successfull" << std::endl;
+      const auto success = evaluate(static_cast<const mpc_ast_t*>(r.output), globalContext);
+      if (success) {
       }
       else {
         std::cout << "Evaluating failed" << std::endl;
