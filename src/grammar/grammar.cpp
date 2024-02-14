@@ -42,8 +42,8 @@ void define_grammar(void) {
 
   mpc_err_t *error =
       mpca_lang_file(MPCA_LANG_DEFAULT, grammar, Identifier, Integer, Char,
-                     String, Collection, Lambda, Operator, Statement, Expression, Pipeline,
-                     Assignment, Comment, Nemo, NULL);
+                     String, Collection, Lambda, Operator, Statement,
+                     Expression, Pipeline, Assignment, Comment, Nemo, NULL);
 
   if (error != NULL) {
     mpc_err_print(error);
@@ -55,6 +55,7 @@ void define_grammar(void) {
 }
 
 void cleanup_parsers(void) {
-  mpc_cleanup(13, Identifier, Integer, Char, String,  Collection, Lambda, Statement,
-              Operator, Expression, Pipeline, Comment, Assignment, Nemo);
+  mpc_cleanup(13, Identifier, Integer, Char, String, Collection, Lambda,
+              Statement, Operator, Expression, Pipeline, Comment, Assignment,
+              Nemo);
 }
