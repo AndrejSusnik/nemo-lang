@@ -2,6 +2,11 @@ let a <= (x) -> {
   "Hello world" |> print
   "Test" |> print
 }
+
+a |> println
+
+println a
+
  
 # let b <= 5 + 1
 

@@ -41,6 +41,10 @@ struct NemoType {
       }
       std::cout << "]";
       break;
+
+    case BuiltinType::LAMBDA:
+      mpc_ast_print(const_cast<mpc_ast_t*>(std::get<const mpc_ast_t *>(value.value_or(nullptr))));
+      break;
     default:
       std::cout << "Not implemeneted";
     }

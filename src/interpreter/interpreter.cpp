@@ -172,6 +172,65 @@ void registerBuiltinFunctions(std::shared_ptr<ScopeContext> ctx) {
 
     return stringType(result);
   });
+
+  ctx->registerFunction("range", [](std::vector<NemoType> args) {
+    if (args.size() != 1) {
+      throw std::runtime_error("range function takes exactly one argument");
+    }
+
+    if (args[0].type != BuiltinType::COLLECTION) {
+      throw std::runtime_error(
+          "range function takes a collection argument, but got " +
+          typeToString(args[0].type));
+    }
+
+    if (args[0].collection.value().size() == 0 ||
+        args[0].collection.value().size() > 3) {
+      throw std::runtime_error(
+          "range function takes a collection of size 1, 2 or 3");
+    }
+
+    auto start = 0;
+    auto end = 0;
+    auto step = 1;
+
+    if (args[0].collection.value().size() == 1) {
+      if (args[0].collection.value()[0].type != BuiltinType::INT) {
+        throw std::runtime_error(
+            "range function takes a collection of integers");
+      }
+
+      end = std::get<int>(args[0].collection.value()[0].value.value());
+    } else if (args[0].collection.value().size() == 2) {
+      if (args[0].collection.value()[0].type != BuiltinType::INT ||
+          args[0].collection.value()[1].type != BuiltinType::INT) {
+        throw std::runtime_error(
+            "range function takes a collection of integers");
+      }
+
+      start = std::get<int>(args[0].collection.value()[0].value.value());
+      end = std::get<int>(args[0].collection.value()[1].value.value());
+    } else {
+      if (args[0].collection.value()[0].type != BuiltinType::INT ||
+          args[0].collection.value()[1].type != BuiltinType::INT ||
+          args[0].collection.value()[2].type != BuiltinType::INT) {
+        throw std::runtime_error(
+            "range function takes a collection of integers");
+      }
+
+      start = std::get<int>(args[0].collection.value()[0].value.value());
+      end = std::get<int>(args[0].collection.value()[1].value.value());
+      step = std::get<int>(args[0].collection.value()[2].value.value());
+    }
+
+    // generate range from start end and step
+    std::vector<NemoType> range;
+    for (auto i = start; i < end; i += step) {
+      range.push_back(numberType(i));
+    }
+
+    return collectionType(range);
+  });
 }
 
 void eval(const mpc_ast_t *ast, std::shared_ptr<ScopeContext> ctx) {
@@ -214,7 +273,7 @@ NemoType eval_pipeline(const mpc_ast_t *ast,
 
       if (std::string(ast->children[i]->tag).find("operator") !=
           std::string::npos) {
-        NemoType nextOp =
+        const auto nextOp =
             eval_expression(ast->children[++i], ctx, std::vector<NemoType>());
         result = eval_operator(result, nextOp,
                                std::string(ast->children[i - 1]->contents));
@@ -331,6 +390,19 @@ NemoType eval_operator(const NemoType &op1, const NemoType &op2,
     } else {
     }
 
+  } break;
+
+  case BuiltinType::COLLECTION: {
+    if (op.compare("+") == 0) {
+      std::vector<NemoType> result;
+      for (const auto &elem : op1.collection.value()) {
+        result.push_back(elem);
+      }
+      for (const auto &elem : op2.collection.value()) {
+        result.push_back(elem);
+      }
+      return collectionType(result);
+    }
   } break;
   case BuiltinType::LAMBDA: {
     return voidType();

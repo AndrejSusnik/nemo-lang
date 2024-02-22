@@ -4,6 +4,7 @@
 
 #include "grammar/grammar.h"
 #include "interpreter/interpreter.h"
+#include "ir/ir.h"
 #include "mpc/mpc.h"
 #include "nemo/common.hpp"
 #include "nemo/verinfo.h"
@@ -19,7 +20,12 @@ int main(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
       mpc_result_t r;
       if (mpc_parse_contents(argv[i], Nemo, &r)) {
-        mpc_ast_print(static_cast<mpc_ast_t *>(r.output));
+        const auto success =
+            evaluate(static_cast<const mpc_ast_t *>(r.output), globalContext);
+        if (success) {
+        } else {
+          std::cout << "Evaluating failed" << std::endl;
+        }
         mpc_ast_delete(static_cast<mpc_ast_t *>(r.output));
       } else {
         mpc_err_print(r.error);

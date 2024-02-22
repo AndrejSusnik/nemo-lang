@@ -9,6 +9,7 @@ mpc_parser_t *String;
 mpc_parser_t *Collection;
 mpc_parser_t *Lambda;
 mpc_parser_t *Operator;
+mpc_parser_t *TypeDefinition;
 mpc_parser_t *Statement;
 mpc_parser_t *Expression;
 mpc_parser_t *Pipeline;
@@ -24,6 +25,7 @@ void create_parsers(void) {
   Collection = mpc_new("collection");
   Lambda = mpc_new("lambda");
   Operator = mpc_new("operator");
+  TypeDefinition = mpc_new("type_definition");
   Statement = mpc_new("statement");
   Expression = mpc_new("expression");
   Pipeline = mpc_new("pipeline");
@@ -42,7 +44,7 @@ void define_grammar(void) {
 
   mpc_err_t *error =
       mpca_lang_file(MPCA_LANG_DEFAULT, grammar, Identifier, Integer, Char,
-                     String, Collection, Lambda, Operator, Statement,
+                     String, Collection, Lambda, Operator, TypeDefinition, Statement,
                      Expression, Pipeline, Assignment, Comment, Nemo, NULL);
 
   if (error != NULL) {
@@ -55,7 +57,7 @@ void define_grammar(void) {
 }
 
 void cleanup_parsers(void) {
-  mpc_cleanup(13, Identifier, Integer, Char, String, Collection, Lambda,
-              Statement, Operator, Expression, Pipeline, Comment, Assignment,
+  mpc_cleanup(14, Identifier, Integer, Char, String, Collection, Lambda,
+              Statement, Operator, TypeDefinition, Expression, Pipeline, Comment, Assignment,
               Nemo);
 }

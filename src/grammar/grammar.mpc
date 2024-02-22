@@ -4,7 +4,7 @@ character : /'.'/ ;
 str    : /\"(\\\\.|[^\"])*\"/ ;                               
 collection: '[' (<number> | <character> | <str> | <collection>)* ']';
 operator  : "+" | "-" | "*" | "/" | "%" | "<" | "<=" | "=" | ">=" | ">";
-
+type_definition: "type" <ident> "=" '{' (<ident>':' <ident>)+ '}';
 lambda    : '(' (<ident> (':' <ident>)?','?)* ')' "->" '{' <statement>* '}' ;
 statement : <assignment> | <pipeline> ;
 expression: <ident> | <character> | <number> | <str> | <lambda> | <collection> ;
